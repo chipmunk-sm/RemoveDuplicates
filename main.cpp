@@ -21,14 +21,21 @@
 
 inline std::string trimWhitespace(std::string value)
 {
-    auto startPos = value.find_first_not_of(' ');
+
+    auto startPos = value.find_first_not_of(" \t");
 
     if (startPos == std::string::npos) // no one nonspace char
         return "";
 
-    auto endPos = value.find_last_not_of(' ') ;
-
-    return value.substr(startPos, endPos - startPos + 1);
+    auto endPos = value.find_last_not_of(" \t\r\n");
+    auto len = endPos - startPos + 1;
+    if(len < 1)
+        return "";
+#if defined(_WIN32) || defined(_WIN64)
+    return value.substr(startPos, len) + "\r\n";
+#else
+    return value.substr(startPos, len) + "\n";
+#endif
 
 }
 
