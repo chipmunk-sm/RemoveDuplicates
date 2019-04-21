@@ -19,6 +19,19 @@
     exit(EXIT_FAILURE);
 }
 
+inline std::string trimWhitespace(std::string value)
+{
+    auto startPos = value.find_first_not_of(' ');
+
+    if (startPos == std::string::npos) // no one nonspace char
+        return "";
+
+    auto endPos = value.find_last_not_of(' ') ;
+
+    return value.substr(startPos, endPos - startPos + 1);
+
+}
+
 int main(int argc, char *argv[])
 {
 
@@ -58,13 +71,14 @@ int main(int argc, char *argv[])
     auto lines = 0;
     while (std::fgets(buffer.data(), static_cast<int>(buffer.size() - 10), processedFile) != nullptr)
     {
-        if (std::find(map.begin(), map.end(), buffer.data()) != map.end())
+        auto tmpItem = trimWhitespace(buffer.data());
+        if (tmpItem.length() < 1 || std::find(map.begin(), map.end(), tmpItem) != map.end())
         {
             skip++;
             continue;
         }
         lines++;
-        map.push_back(buffer.data());
+        map.push_back(tmpItem);
     }
 
     std::cout << "Source size " << std::ftell(processedFile) << " bytes" << std::endl;
